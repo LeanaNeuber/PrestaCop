@@ -1,6 +1,7 @@
 package project
 
-import java.util.Properties
+import java.time.LocalDate
+import java.util.{Calendar, Properties}
 
 import org.apache.kafka.clients.producer._
 import play.api.libs.json._
@@ -9,8 +10,6 @@ object DroneSim {
   implicit val residentWrites: OWrites[Message] = Json.writes[Message]
 
   def main(args: Array[String]): Unit = {
-    println("Sending test message")
-
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
     props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
@@ -18,17 +17,26 @@ object DroneSim {
 
     val producer = new KafkaProducer[String, String](props)
     val topic = "test"
+    val messageCount = 100
 
-    writeToKafka(producer, topic, Message("94800-Villejuif", "12:00", "100"))
-    writeToKafka(producer, topic, Message("94800-Villejuif", "12:05", "102", Some("99"), Some("5")))
+    // We need to mock messages and decide upon a violation code that triggers an alert... take 42
+    // Should we try to send messages never ending in a time interval (how in a functional way?)
+    // Now: Send 100 messages, every 3 seconds, every fifth is a violation
+
+    //Is it even necessary to send non-alert messages? Because the messages are fake anyway and shouldn't be considered in our analysis
+
+    val r = scala.util.Random
+
+    (1 to messageCount).foreach(i => {
+      writeToKafka(producer, topic, Message("94800-Villejuif", Calendar.getInstance().getTime.toString , r.nextInt(100).toString, Some((42 + i%5).toString), Some(r.nextInt(100).toString)))
+      Thread.sleep(3000)
+    })
 
     producer.close()
-    println("Transmission over")
   }
 
   def writeToKafka(producer: KafkaProducer[String, String], topic: String, message: Message): Unit = {
     val record = new ProducerRecord[String, String](topic, Json.toJson(message).toString())
-
     producer.send(record)
   }
 

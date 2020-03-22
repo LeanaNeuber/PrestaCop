@@ -1,4 +1,4 @@
-name := "Spark Project"
+name := "Drone Simulator"
 
 version := "1.0"
 

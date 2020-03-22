@@ -1,4 +1,4 @@
-package com.tp.spark.core
+package com.project.spark.core
 
 case class Message(
                     location: String,

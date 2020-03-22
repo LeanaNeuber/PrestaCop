@@ -1,8 +1,9 @@
-package com.tp.spark.core
+package com.project.spark.core
 
 import java.util.Properties
 
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.common.serialization.StringDeserializer
 import play.api.libs.json._
 
 import scala.io.Source
@@ -17,8 +18,8 @@ object Producer {
 
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
-    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("key.serializer", classOf[StringDeserializer])
+    props.put("value.serializer", classOf[StringDeserializer])
 
     val producer = new KafkaProducer[String, String](props)
 
@@ -41,9 +42,8 @@ object Producer {
     bufferedSource.close()
   }
 
-  //map to schema (case 48 columns do smth, case 51 do something, case else drop the line ) --> case class
+  //map to schema (case 48 columns do smth, case 51 do something, case else drop the line ) --> case class wtf?
   private def extractLines(producer: KafkaProducer[String, String], header: List[String], lineList: List[String]) = lineList match {
-
       case x if lineList.size > header.indexOf("Street Name") => {
         val location = x(header.indexOf("House Number")) + " " + x(header.indexOf("Street Name"))
         val time = x(header.indexOf("Issue Date"))
