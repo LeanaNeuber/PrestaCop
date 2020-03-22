@@ -3,7 +3,6 @@ package com.project.spark.core
 import java.util.Properties
 
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.kafka.common.serialization.StringDeserializer
 import play.api.libs.json._
 
 import scala.io.Source
@@ -18,8 +17,8 @@ object Producer {
 
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
-    props.put("key.serializer", classOf[StringDeserializer])
-    props.put("value.serializer", classOf[StringDeserializer])
+    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
     val producer = new KafkaProducer[String, String](props)
 
@@ -27,7 +26,6 @@ object Producer {
 
     producer.close()
   }
-
 
   private def extractCSV(pathToFile: String, producer: KafkaProducer[String, String]) = {
     val bufferedSource = Source.fromFile(pathToFile)
@@ -57,6 +55,4 @@ object Producer {
     val record = new ProducerRecord[String, String](topic, Json.toJson(message).toString())
     producer.send(record)
   }
-
-
 }

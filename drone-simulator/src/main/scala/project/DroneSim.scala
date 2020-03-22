@@ -1,6 +1,5 @@
 package project
 
-import java.time.LocalDate
 import java.util.{Calendar, Properties}
 
 import org.apache.kafka.clients.producer._
