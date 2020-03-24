@@ -15,17 +15,7 @@ object DroneSim {
 
   def main(args: Array[String]): Unit = {
 
-    val credentialsProvider = new AWSCredentialsProvider {
-      override def refresh(): Unit = {}
-
-      override def getCredentials: AWSCredentials = {
-        val credentialsFile = new File(sys.env("HOME"), ".aws.properties")
-
-        new PropertiesCredentials(credentialsFile)
-      }
-    }
-
-    val kinesisClient = buildKinesisClient(credentialsProvider)
+    val kinesisClient = buildKinesisClient(getCreds)
 
     val messageCount = 100
     val r = scala.util.Random
@@ -36,12 +26,27 @@ object DroneSim {
     })
   }
 
+  private def getCreds = {
+    new AWSCredentialsProvider {
+      override def refresh(): Unit = {}
+
+      override def getCredentials: AWSCredentials = {
+        val credentialsFile = new File(sys.env("HOME"), ".aws.properties")
+
+        new PropertiesCredentials(credentialsFile)
+      }
+    }
+  }
+
   private def sendMessage(kinesisClient: AmazonKinesis, message: Message) = {
     // Think about using putRecordsRequest and send several at a time
     // This approach is sending an HTTP request for every message... not cool
     // Takes around 5 minutes like this for 100 messages
+    println("Sending Message....")
+
     val putRecordRequest = new PutRecordRequest
     putRecordRequest.setStreamName("prestacop")
+    // This I don't understand with the partitionkey
     putRecordRequest.setPartitionKey("somekey")
     putRecordRequest.setData(ByteBuffer.wrap(Json.toJson(message).toString().getBytes()))
 
