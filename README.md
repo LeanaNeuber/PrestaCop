@@ -4,21 +4,30 @@
 This project is realized within the course **Functional Data Programming** at the **Efrei Paris**.
 
 ## Problem Description
-- Describe 
+**PrestaCop** is a company that wants to create a drone service to help the police make parking tickets.
 
-## Data Model
-- Insert Message case class form here 
+Each drone sends messages regularly, with:
+- drone location
+- time
+- drone id
+
+And if a violation occured, with the two following additional fields:
+- violation code
+- image id
+
+When the drone's message violation code indicates that human interaction is required (1% of the time), an alarm must be send to a human operator.
+
+With all the data, PrestaCop wants to make statistics and improve their services. To improve those statistics, NYPD historical data should be used. However, NYPD poses two constraints:
+- The computers are old and not very powerful
+- The data is stored in a large CSV
 
 ## Architecture
 - 5 Services as basic part: describe shortly
 - Extra touch
 - Deployment to cloud.. or not 
 
-### Architecture Proposal 1: Using Kafka + HDFS
-- Picture..!
-
-### Architecture Proposal 2: Using AWS Kinesis + S3
-- Picture..!
+## Data Model
+As described above, the drone sends messages wit 3 or 5 fields. We used a 
 
 ## Development Process
 - git.. explain 
@@ -60,7 +69,7 @@ We are implementing this project in Scala, using a functional progamming approac
 - [ ] Implement an Alarm solution: Website? 
 - [ ] Deployment of whole project to AWS: Terraform
 - [ ] Provide CSV-to-Stream as fatjar
-- [ ] Question: In what interval should our drone simulator send what messages?
+- [ ] Question: In what interval should our drone simulator send what messages? It says 1% of messages are alarms.
 - [ ] Question: Usage of Docker for deployment?
 - [ ] Question: Should the CSV-to-Stream be deployed to AWS?
 - [ ] Question: More "own touch"?
