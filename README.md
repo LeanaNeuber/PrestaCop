@@ -22,17 +22,27 @@ With all the data, PrestaCop wants to make statistics and improve their services
 - The data is stored in a large CSV
 
 ## Architecture
-- 5 Services as basic part: describe shortly
-- Extra touch
-- Deployment to cloud.. or not 
+The basic part of this project consists of the following 5 Services, a stream and a storage solution:
+- **csv-to-stream**: Reads the NYPD CSV and publishes the rows as messages to the stream
+- **drone-simulator**: Simulates a drone, sends messages of different forms to the stream
+- **alert-system**: Consumes stream messages, raises an alarm when human interaction is required
+- **stream-to-storage**: Consumes stream messages, stores them
+- **analysis**: Reads messages out of storage, performs the analysis
+
+The following picture depicts how the components work together:
+![Architecture](Architecture_v1.png)
 
 ## Data Model
-As described above, the drone sends messages wit 3 or 5 fields. We used a 
-
-## Development Process
-- git.. explain 
-- One branch: master --> Needs super good communication!
-- Think about the Kinesis stream: Create and delete again!
+As described above, the drone sends messages wit 3 or 5 fields. We used a Scala case class **Message** to realize this data format:
+```scala
+case class Message(
+                    location: String,
+                    time: String,
+                    droneId: String,
+                    violationCode: Option[String] = None,
+                    violationImageId: Option[String] = None
+                  )
+```
 
 ## Set up development environment
 We are implementing this project in Scala, using a functional progamming approach.
