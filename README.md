@@ -59,10 +59,16 @@ We are implementing this project in Scala, using a functional progamming approac
 
 ## Set up AWS environment
 - Open your AWS console
-- Create a new IAM role that is able to write/read to/from Kinesis and S3
+- Create a new IAM user that is able to write/read to/from Kinesis and S3
+- To your home directory, add a file with the name ".aws.properties" with the following content (Add the credentials of the created user:
+```
+[default]
+accessKey=addAccessKeyHere
+secretKey=addSecretKeyHere
+```
 - Create a Kinesis stream with one shard, called "prestacop"
-- Create a S3 Bucket with name close to "prestacop" (I already used this, so you won't be able to. Just remember to change the code to read from your bucket for now. Env variables or command line arguments will be added later)
-- !!!! Remember to always delete Kinesis after you finished your testing, as it will cost you.
+- Create a S3 Bucket with name and change the code to use this bucket.Env variables or command line arguments will be added later to specify it.
+> **_Attention!:_**  Remember to always delete Kinesis after you finished your testing, as it will cost you.
 
 ## Set up Kafka environment
 - Download Kafka (link)
