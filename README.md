@@ -76,21 +76,19 @@ secretKey=addSecretKeyHere
 - Create "test" stream
 
 ## To Do...
+- [ ] Implement the Spark Analysis (Colombe)
+- [ ] Think about analysis that can be performed on the data (All)
+- [ ] Add command line parameters or environment variables to all our services (Lea)
+- [ ] Refactor all service, extract methods/classes and such (Céline, Florian)
+- [ ] Implement an Alarm solution: Website? (Florian)
 - [ ] Provide proper data cleansing on CSV
-- [ ] Implement the Spark Analysis
-- [ ] Think about analysis that can be performed on the data
-- [ ] Add command line parameters or environment variables to all our services
-- [ ] Refactor all service, extract methods/classes and such
-- [ ] Implement cosumer to HDFS **if** we don't use S3
-- [ ] Implement an Alarm solution: Website? 
+- [ ] Question: In what interval should our drone simulator send what messages? It says 1% of messages are alarms.
+
+## Not yet
 - [ ] Deployment of whole project to AWS: Terraform
 - [ ] Provide CSV-to-Stream as fatjar
-- [ ] Question: In what interval should our drone simulator send what messages? It says 1% of messages are alarms.
-- [ ] Question: Usage of Docker for deployment?
-- [ ] Question: Should the CSV-to-Stream be deployed to AWS?
-- [ ] Question: More "own touch"?
 
 ## Questions to ask
-
 - [ ] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
 - [ ] Ask about data cleaning 
+- [ ] Question: Should the CSV-to-Stream be deployed to AWS?
