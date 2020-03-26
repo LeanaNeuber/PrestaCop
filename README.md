@@ -89,3 +89,7 @@ secretKey=addSecretKeyHere
 - [ ] Question: Usage of Docker for deployment?
 - [ ] Question: Should the CSV-to-Stream be deployed to AWS?
 - [ ] Question: More "own touch"?
+
+## Questions to ask
+
+- [ ] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
