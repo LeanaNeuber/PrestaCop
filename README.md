@@ -93,3 +93,4 @@ secretKey=addSecretKeyHere
 ## Questions to ask
 
 - [ ] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
+- [ ] Ask about data cleaning 
