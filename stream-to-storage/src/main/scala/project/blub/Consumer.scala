@@ -55,7 +55,7 @@ object Consumer {
 
   def store(s3Client: AmazonS3, message: Message): Unit = {
     println("Store something!")
-    s3Client.putObject("prestacop", message.droneId +"_"+ message.time, message.toString)
+    s3Client.putObject("prestacop", message.droneId +"_"+ message.time.replace("/", "-"), message.toString)
   }
 
   private def getCreds = {
