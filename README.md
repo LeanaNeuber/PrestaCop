@@ -81,11 +81,9 @@ secretKey=addSecretKeyHere
 - [ ] Add command line parameters or environment variables to all our services (Lea)
 - [ ] Refactor all service, extract methods/classes and such (Céline, Florian)
 - [ ] Implement an Alarm solution: Website? (Florian)
-- [ ] Provide proper data cleansing on CSV
-
-## Not yet
+- [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
 - [ ] Deployment of whole project to AWS: Terraform
-- [ ] Provide CSV-to-Stream as fatjar
+- [ ] Slides for the final presentation
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
