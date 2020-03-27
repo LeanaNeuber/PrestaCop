@@ -84,6 +84,7 @@ secretKey=addSecretKeyHere
 - [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
 - [ ] Deployment of whole project to AWS: Terraform
 - [ ] Slides for the final presentation
+- [ ] Update all readmes with information on the command line parameters and functionality 
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
