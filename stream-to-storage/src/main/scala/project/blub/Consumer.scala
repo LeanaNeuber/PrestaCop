@@ -63,8 +63,7 @@ object Consumer {
       override def refresh(): Unit = {}
 
       override def getCredentials: AWSCredentials = {
-        val credentialsFile = new File(sys.env("HOME"), ".aws.properties")
-
+        val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
         new PropertiesCredentials(credentialsFile)
       }
     }

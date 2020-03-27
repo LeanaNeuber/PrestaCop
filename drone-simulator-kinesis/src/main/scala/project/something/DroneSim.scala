@@ -1,4 +1,4 @@
-package project
+package project.something
 
 import java.io.File
 import java.nio.ByteBuffer
@@ -6,8 +6,9 @@ import java.util.Calendar
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
 import com.amazonaws.services.kinesis.model.PutRecordRequest
-import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClient, AmazonKinesisClientBuilder, model}
+import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
 import play.api.libs.json.{Json, OWrites}
+import project.Message
 
 object DroneSim {
 
@@ -31,7 +32,7 @@ object DroneSim {
       override def refresh(): Unit = {}
 
       override def getCredentials: AWSCredentials = {
-        val credentialsFile = new File(sys.env("HOME"), ".aws.properties")
+        val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
 
         new PropertiesCredentials(credentialsFile)
       }
