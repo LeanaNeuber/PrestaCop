@@ -40,8 +40,8 @@ object Consumer {
     val records = kinesisClient.getRecords(getRecordsRequest).getRecords
     processRecords(s3Client, records.asScala.toList)
 
-    //Sleep for 3 seconds, then call the method again. Maybe not the best approach because never ending..
-    Thread.sleep(3000)
+    //Sleep for 1 seconds, then call the method again. Maybe not the best approach because never ending..
+    Thread.sleep(1000)
 
     loopPoll(s3Client,kinesisClient, shardIterator)
 
@@ -49,7 +49,6 @@ object Consumer {
 
   def processRecords(s3Client: AmazonS3, records: List[Record]) = {
     records.map(r => StandardCharsets.UTF_8.decode(r.getData).toString()).map(message => Json.parse(message).as[Message])
-      .filter(message => message.violationCode.get.equals("42"))
       .foreach(m => store(s3Client, m))
   }
 
