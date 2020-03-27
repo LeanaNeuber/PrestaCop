@@ -1,4 +1,4 @@
-<img align="left" width="80" height="80" src="lildrone.png" alt=">Drone icon">
+<img align="left" width="80" height="80" src="/Images/lildrone.png" alt=">Drone icon">
 
 # PrestaCop
 This project is realized within the course **Functional Data Programming** at the **Efrei Paris**.
@@ -30,7 +30,7 @@ The basic part of this project consists of the following 5 Services, a stream an
 - **analysis**: Reads messages out of storage, performs the analysis
 
 The following picture depicts how the components work together:
-![Architecture](Architecture_v1.png)
+![Architecture](/Images/Architecture_v1.png)
 
 ## Data Model
 As described above, the drone sends messages wit 3 or 5 fields. We used a Scala case class **Message** to realize this data format:
