@@ -26,24 +26,25 @@ object Consumer {
   }
 
   def checkShard(s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardId: String): Unit = {
-    val shardIterator = kinesisClient.getShardIterator("prestacop", shardId, "LATEST")
+    val shardIterator = kinesisClient.getShardIterator("prestacop", shardId, "LATEST").getShardIterator
     loopPoll(s3Client, kinesisClient, shardIterator)
   }
 
-  def loopPoll(s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardIterator: GetShardIteratorResult):Unit =  {
-    val next_iter = shardIterator.getShardIterator
+  def loopPoll(s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardIterator: String):Unit =  {
 
     val getRecordsRequest = new GetRecordsRequest
-    getRecordsRequest.setShardIterator(next_iter)
-    getRecordsRequest.setLimit(10)
+    getRecordsRequest.setShardIterator(shardIterator)
+    getRecordsRequest.setLimit(25)
 
-    val records = kinesisClient.getRecords(getRecordsRequest).getRecords
-    processRecords(s3Client, records.asScala.toList)
+    val recordsResult = kinesisClient.getRecords(getRecordsRequest)
+
+    processRecords(s3Client, recordsResult.getRecords.asScala.toList)
 
     //Sleep for 1 seconds, then call the method again. Maybe not the best approach because never ending..
     Thread.sleep(1000)
 
-    loopPoll(s3Client,kinesisClient, shardIterator)
+    val next_iter = recordsResult.getNextShardIterator
+    loopPoll(s3Client,kinesisClient, next_iter)
 
   }
 
@@ -54,7 +55,7 @@ object Consumer {
 
   def store(s3Client: AmazonS3, message: Message): Unit = {
     println("Store something!")
-    s3Client.putObject("prestacop" + "/" + message.droneId, message.droneId + message.time, message.toString)
+    s3Client.putObject("prestacop", message.droneId +"_"+ message.time, message.toString)
   }
 
   private def getCreds = {

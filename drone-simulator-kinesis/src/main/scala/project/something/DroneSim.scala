@@ -18,37 +18,24 @@ object DroneSim {
 
     val kinesisClient = buildKinesisClient(getCreds)
 
-    val messageCount = 100
     val r = scala.util.Random
 
-    (1 to messageCount).foreach(i => {
-      sendMessage(kinesisClient, Message("94800-Villejuif", Calendar.getInstance().getTime.toString , r.nextInt(100).toString, Some((42 + i%5).toString), Some(r.nextInt(100).toString)))
-      Thread.sleep(3000)
+    // send 100 messages
+    // Violation Code: 666 raises an Alert (make sure it's not one that is raised by the NYPD dataset)
+    // make every 10th message an alert (even though it says 1% in the original project description)
+    (1 to 100).foreach(i => {
+      sendMessage(kinesisClient, Message("94800-Villejuif", Calendar.getInstance().getTime.toString , i.toString, Some((666 + i%10).toString), Some(r.nextInt(100).toString)))
+      Thread.sleep(1000)
     })
   }
 
-  private def getCreds = {
-    new AWSCredentialsProvider {
-      override def refresh(): Unit = {}
-
-      override def getCredentials: AWSCredentials = {
-        val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
-
-        new PropertiesCredentials(credentialsFile)
-      }
-    }
-  }
 
   private def sendMessage(kinesisClient: AmazonKinesis, message: Message) = {
-    // Think about using putRecordsRequest and send several at a time
-    // This approach is sending an HTTP request for every message... not cool
-    // Takes around 5 minutes like this for 100 messages
     println("Sending Message....")
 
     val putRecordRequest = new PutRecordRequest
     putRecordRequest.setStreamName("prestacop")
-    // This I don't understand with the partitionkey
-    putRecordRequest.setPartitionKey("somekey")
+    putRecordRequest.setPartitionKey("key")
     putRecordRequest.setData(ByteBuffer.wrap(Json.toJson(message).toString().getBytes()))
 
     kinesisClient.putRecord(putRecordRequest)
@@ -58,7 +45,16 @@ object DroneSim {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
     clientBuilder.setRegion("eu-central-1")
     clientBuilder.setCredentials(credentialsProvider)
-
     clientBuilder.build
+  }
+
+  private def getCreds = {
+    new AWSCredentialsProvider {
+      override def refresh(): Unit = {}
+      override def getCredentials: AWSCredentials = {
+        val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
+        new PropertiesCredentials(credentialsFile)
+      }
+    }
   }
 }
