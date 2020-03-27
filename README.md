@@ -89,11 +89,19 @@ secretKey=addSecretKeyHere
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
+  
   -> Everything can be done with Scala + Terraform. If we really have a problem regarding a service, we can send him an email.
+  
   -> If not in Scala, in Java then (compile Scala into Java).
 - [x] Ask about data cleaning 
+  
   -> The program should not crash if the CSV isn't clean
+  
   -> Not send the bad lines
 - [x] Question: In what interval should our drone simulator send what messages? It says 1% of messages are alarms.
+
   -> We're not obligated to do an interval. A simulator sending 20 messages with 1 alarm is enough.
+
 - [ ] Question: Should the CSV-to-Stream be deployed to AWS?
+
+  -> Nope, one-time thing are OK
