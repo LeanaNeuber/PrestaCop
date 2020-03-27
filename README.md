@@ -102,6 +102,6 @@ secretKey=addSecretKeyHere
 
   -> We're not obligated to do an interval. A simulator sending 20 messages with 1 alarm is enough.
 
-- [ ] Question: Should the CSV-to-Stream be deployed to AWS?
+- [x] Question: Should the CSV-to-Stream be deployed to AWS?
 
   -> Nope, one-time thing are OK
