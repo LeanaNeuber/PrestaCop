@@ -1,4 +1,4 @@
-package project
+package project.folder
 
 case class Message(
                     location: String,

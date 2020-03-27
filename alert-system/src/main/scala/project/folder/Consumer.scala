@@ -1,10 +1,10 @@
-package project
+package project.folder
 
 import java.io.File
 import java.nio.charset.StandardCharsets
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
-import com.amazonaws.services.kinesis.model.{GetRecordsRequest, GetShardIteratorResult, Record}
+import com.amazonaws.services.kinesis.model.{GetRecordsRequest, Record}
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
 import play.api.libs.json._
 
