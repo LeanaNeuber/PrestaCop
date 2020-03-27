@@ -41,7 +41,7 @@ object Producer {
         val location = x(header.indexOf("House Number")) + " " + x(header.indexOf("Street Name"))
         val time = x(header.indexOf("Issue Date"))
         val violationCode = x(header.indexOf("Violation Code"))
-        writeToKinesis(kinesisClient, "test", Message(location, time, "123droneID", Some(violationCode)))
+        writeToKinesis(kinesisClient, "test", Message(location, time, scala.util.Random.nextInt(100000).toString, Some(violationCode)))
       }
       case _ =>
   }

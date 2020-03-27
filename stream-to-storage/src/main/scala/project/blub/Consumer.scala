@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
 import com.amazonaws.services.kinesis.model.{GetRecordsRequest, GetShardIteratorResult, Record}
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
-import com.amazonaws.services.s3.model.PutObjectRequest
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import play.api.libs.json._
 import project.Message
@@ -54,7 +53,6 @@ object Consumer {
   }
 
   def store(s3Client: AmazonS3, message: Message): Unit = {
-    println("Store something!")
     s3Client.putObject("prestacop", message.droneId +"_"+ message.time.replace("/", "-"), message.toString)
   }
 
