@@ -22,12 +22,20 @@ object Consumer {
   implicit val messageWrite = Json.format[Message]
 
   def main(args: Array[String]): Unit = {
+    if (args.length < 3)
+      println("Three arguments are required to start this application: the aws region, the stream, and the dynamodb table name!")
+
+    val region = args(0)
+    val stream = args(1)
+    val table = args(2)
+
+
     val creds = getCreds
-    checkShard(getDynamoTable(creds), buildKinesisClient(creds), "shardId-000000000000")
+    checkShard(stream, getDynamoTable(region, table, creds), buildKinesisClient(region, creds), "shardId-000000000000")
   }
 
-  def checkShard(table: Table, kinesisClient: AmazonKinesis, shardId: String): Unit = {
-    val shardIterator = kinesisClient.getShardIterator("prestacop", shardId, "LATEST").getShardIterator
+  def checkShard(stream: String, table: Table, kinesisClient: AmazonKinesis, shardId: String): Unit = {
+    val shardIterator = kinesisClient.getShardIterator(stream, shardId, "LATEST").getShardIterator
     loopPoll(table, kinesisClient, shardIterator)
   }
 
@@ -81,19 +89,19 @@ object Consumer {
     }
   }
 
-  private def getDynamoTable(credentialsProvider: AWSCredentialsProvider) = {
+  private def getDynamoTable(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
     val clientBuilder = AmazonDynamoDBClientBuilder.standard()
-    clientBuilder.setRegion("eu-central-1")
+    clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     val client = clientBuilder.build
 
     val dynamoDB = new DynamoDB(client)
-    dynamoDB.getTable("prestacop")
+    dynamoDB.getTable(table)
   }
 
-  private def buildKinesisClient(credentialsProvider: AWSCredentialsProvider) = {
+  private def buildKinesisClient(region: String, credentialsProvider: AWSCredentialsProvider) = {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
-    clientBuilder.setRegion("eu-central-1")
+    clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
