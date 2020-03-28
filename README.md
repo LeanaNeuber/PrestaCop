@@ -86,7 +86,7 @@ secretKey=addSecretKeyHere
 - [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
 - [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
 - [ ] Update all readmes with information on the command line parameters and functionality 
-- [ ] Slides for the final presentation
+- [ ] Slides for the final presentation (started: https://drive.google.com/open?id=1vLUkIZvWxExHNiCq2eZpneHbTwLoO8Mj)
 - [ ] Deployment of whole project to AWS: Terraform
 
 ## Questions to ask
