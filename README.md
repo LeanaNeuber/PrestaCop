@@ -81,13 +81,13 @@ secretKey=addSecretKeyHere
 ## To Do...
 - [ ] Implement the Spark Analysis (Colombe)
 - [ ] Think about analysis that can be performed on the data (All)
-- [ ] Add command line parameters or environment variables to all our services (Lea)
 - [ ] Refactor all service, extract methods/classes and such (Céline, Florian)
 - [ ] Implement an Alarm solution: Website? (Florian)
 - [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
-- [ ] Deployment of whole project to AWS: Terraform
-- [ ] Slides for the final presentation
+- [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
 - [ ] Update all readmes with information on the command line parameters and functionality 
+- [ ] Slides for the final presentation
+- [ ] Deployment of whole project to AWS: Terraform
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
