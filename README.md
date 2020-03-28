@@ -95,13 +95,16 @@ We need to implement the following steps with Terraform:
 - [ ] Think about analysis that can be performed on the data (All)
 - [ ] Refactor all service, extract methods/classes and such (Céline, Florian)
 - [ ] Implement an Alarm solution: Website? (Florian)
-- [ ] Don't write every single message to s3, but group them after time/ count...!
-- [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
-- [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
-- [ ] Update all readmes with information on the command line parameters and functionality 
+
+- [ ] Don't write every single message to s3, small messages are not made for data lakes. Probable solution: Create zip archives and publish the messages in bulks (not very nice, because we also have to unzip them for the analysis), Store the Elements in DynamoDB and think of a solution on how to archive all the dynamodb data to S3 from time to time and delete the DynamoDB. Other possible solutions?
+
 - [ ] Slides for the final presentation (started: https://drive.google.com/open?id=1vLUkIZvWxExHNiCq2eZpneHbTwLoO8Mj)
 - [ ] Deployment of whole project to AWS: Terraform
 - [ ] Create a manual on how to test the whole project for the prof
+
+- [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
+- [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
+- [x] Update all readmes with information on the command line parameters and functionality 
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
