@@ -86,6 +86,7 @@ We need to implement the following steps with Terraform:
 - Create a Kinesis stream with one shard 
 - Create a S3 bucket with a unique name 
 - Create dynamoDB table with the primary key column "id"
+- Deploy our 3 Services (Stream2Storage, Alert, Analysis) to AWS (probably with terraform EC2 instances and a script)
 
 > The region, kinesis stream name, bucket name, and dynamoDB table name must later be given as command line parameters to our services!
 
@@ -94,11 +95,13 @@ We need to implement the following steps with Terraform:
 - [ ] Think about analysis that can be performed on the data (All)
 - [ ] Refactor all service, extract methods/classes and such (Céline, Florian)
 - [ ] Implement an Alarm solution: Website? (Florian)
+- [ ] Don't write every single message to s3, but group them after time/ count...!
 - [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
 - [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
 - [ ] Update all readmes with information on the command line parameters and functionality 
 - [ ] Slides for the final presentation (started: https://drive.google.com/open?id=1vLUkIZvWxExHNiCq2eZpneHbTwLoO8Mj)
 - [ ] Deployment of whole project to AWS: Terraform
+- [ ] Create a manual on how to test the whole project for the prof
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
