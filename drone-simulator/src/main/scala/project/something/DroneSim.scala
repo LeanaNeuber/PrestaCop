@@ -16,34 +16,39 @@ object DroneSim {
 
   def main(args: Array[String]): Unit = {
 
-    val kinesisClient = buildKinesisClient(getCreds)
+    if (args.length < 2)
+      println("Two arguments are required to start this application: the aws region and the stream")
 
+    val region = args(0)
+    val stream = args(1)
+
+    val kinesisClient = buildKinesisClient(region, getCreds)
     val r = scala.util.Random
 
     // send 100 messages
     // Violation Code: 666 raises an Alert (make sure it's not one that is raised by the NYPD dataset)
     // make every 10th message an alert (even though it says 1% in the original project description)
     (1 to 100).foreach(i => {
-      sendMessage(kinesisClient, Message("94800-Villejuif", Calendar.getInstance().getTime.toString , i.toString, Some((666 + i%10).toString), Some(r.nextInt(100).toString)))
+      sendMessage(stream, kinesisClient, Message("94800-Villejuif", Calendar.getInstance().getTime.toString , i.toString, Some((666 + i%10).toString), Some(r.nextInt(100).toString)))
       Thread.sleep(1000)
     })
   }
 
 
-  private def sendMessage(kinesisClient: AmazonKinesis, message: Message) = {
+  private def sendMessage(stream: String, kinesisClient: AmazonKinesis, message: Message) = {
     println("Sending Message....")
 
     val putRecordRequest = new PutRecordRequest
-    putRecordRequest.setStreamName("prestacop")
+    putRecordRequest.setStreamName(stream)
     putRecordRequest.setPartitionKey("key")
     putRecordRequest.setData(ByteBuffer.wrap(Json.toJson(message).toString().getBytes()))
 
     kinesisClient.putRecord(putRecordRequest)
   }
 
-  private def buildKinesisClient(credentialsProvider: AWSCredentialsProvider) = {
+  private def buildKinesisClient(region: String, credentialsProvider: AWSCredentialsProvider) = {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
-    clientBuilder.setRegion("eu-central-1")
+    clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
