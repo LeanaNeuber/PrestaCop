@@ -78,6 +78,17 @@ secretKey=addSecretKeyHere
 - Start Kafka and Zookeeper
 - Create "test" stream
 
+## Thoughts on Terraform
+We need to implement the following steps with Terraform:
+- Choose a region for everything
+- Create an IAM user that has DynamoDB, S3, and Kinesis full access
+- Store the AccessKey and SecretKey in a file called ".aws.properties" in the home folder of the user
+- Create a Kinesis stream with one shard 
+- Create a S3 bucket with a unique name 
+- Create dynamoDB table with the primary key column "id"
+
+> The region, kinesis stream name, bucket name, and dynamoDB table name must later be given as command line parameters to our services!
+
 ## To Do...
 - [ ] Implement the Spark Analysis (Colombe)
 - [ ] Think about analysis that can be performed on the data (All)
