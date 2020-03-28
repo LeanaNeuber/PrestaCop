@@ -19,17 +19,25 @@ object Consumer {
   implicit val messageWrite = Json.format[Message]
 
   def main(args: Array[String]): Unit = {
+
+    if (args.length < 3)
+      println("Three arguments are required to start this application: the aws region, the stream, and the bucket name!")
+
+    val region = args(0)
+    val stream = args(1)
+    val bucket = args(2)
+
     val creds = getCreds
-    checkShard(buildS3Client(creds),buildKinesisClient(creds), "shardId-000000000000")
+    checkShard(stream, bucket, buildS3Client(region, creds),buildKinesisClient(region, creds), "shardId-000000000000")
 
   }
 
-  def checkShard(s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardId: String): Unit = {
-    val shardIterator = kinesisClient.getShardIterator("prestacop", shardId, "LATEST").getShardIterator
-    loopPoll(s3Client, kinesisClient, shardIterator)
+  def checkShard(stream: String, bucket: String, s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardId: String): Unit = {
+    val shardIterator = kinesisClient.getShardIterator(stream, shardId, "LATEST").getShardIterator
+    loopPoll(bucket, s3Client, kinesisClient, shardIterator)
   }
 
-  def loopPoll(s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardIterator: String):Unit =  {
+  def loopPoll(bucket: String, s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardIterator: String):Unit =  {
 
     val getRecordsRequest = new GetRecordsRequest
     getRecordsRequest.setShardIterator(shardIterator)
@@ -37,23 +45,23 @@ object Consumer {
 
     val recordsResult = kinesisClient.getRecords(getRecordsRequest)
 
-    processRecords(s3Client, recordsResult.getRecords.asScala.toList)
+    processRecords(bucket, s3Client, recordsResult.getRecords.asScala.toList)
 
     //Sleep for 1 seconds, then call the method again. Maybe not the best approach because never ending..
     Thread.sleep(1000)
 
     val next_iter = recordsResult.getNextShardIterator
-    loopPoll(s3Client,kinesisClient, next_iter)
+    loopPoll(bucket, s3Client,kinesisClient, next_iter)
 
   }
 
-  def processRecords(s3Client: AmazonS3, records: List[Record]) = {
+  def processRecords(bucket: String, s3Client: AmazonS3, records: List[Record]) = {
     records.map(r => StandardCharsets.UTF_8.decode(r.getData).toString()).map(message => Json.parse(message).as[Message])
-      .foreach(m => store(s3Client, m))
+      .foreach(m => store(bucket, s3Client, m))
   }
 
-  def store(s3Client: AmazonS3, message: Message): Unit = {
-    s3Client.putObject("prestacop", message.droneId +"_"+ message.time.replace("/", "-"), message.toString)
+  def store(bucket: String, s3Client: AmazonS3, message: Message): Unit = {
+    s3Client.putObject(bucket, message.droneId +"_"+ message.time.replace("/", "-"), message.toString)
   }
 
   private def getCreds = {
@@ -67,16 +75,16 @@ object Consumer {
     }
   }
 
-  private def buildKinesisClient(credentialsProvider: AWSCredentialsProvider) = {
+  private def buildKinesisClient(region: String, credentialsProvider: AWSCredentialsProvider) = {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
-    clientBuilder.setRegion("eu-central-1")
+    clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
 
-  private def buildS3Client(credentialsProvider: AWSCredentialsProvider) = {
+  private def buildS3Client(region: String, credentialsProvider: AWSCredentialsProvider) = {
     val clientBuilder = AmazonS3ClientBuilder.standard()
-    clientBuilder.setRegion("eu-central-1")
+    clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
