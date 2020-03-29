@@ -33,7 +33,7 @@ The following picture depicts how the components work together:
 ![Architecture](/Images/Architecture_v1.png)
 
 The following picture depicts our current AWS architecture:
-![Architecture](/Images/AWS_Architecture.png)
+![Architecture](/Images/AWS_Architecture_v2.png)
 
 ## Data Model
 As described above, the drone sends messages wit 3 or 5 fields. We used a Scala case class **Message** to realize this data format:
