@@ -84,23 +84,28 @@ We need to implement the following steps with Terraform:
 - Create an IAM user that has DynamoDB, S3, and Kinesis full access
 - Store the AccessKey and SecretKey in a file called ".aws.properties" in the home folder of the user
 - Create a Kinesis stream with one shard 
-- Create a S3 bucket with a unique name 
-- Create dynamoDB table with the primary key column "id"
-- Deploy our 3 Services (Stream2Storage, Alert, Analysis) to AWS (probably with terraform EC2 instances and a script)
+- Create a S3 bucket with a unique name for archiving
+- Create dynamoDB table with the primary key column "id", TTL enabled
+- Create a SNS topic for our alert service, if possible create a subsription with an email address
+- Create 3 EC2 instances for our services to be deployed on
 
-> The region, kinesis stream name, bucket name, and dynamoDB table name must later be given as command line parameters to our services!
+
+> Deploy our 3 Services (Stream2Storage, Alert, Analysis) to AWS (probably with terraform EC2 instances and a script), look at Ansible for the deployment
+
+
+> The region, kinesis stream name, sns topic arn, and dynamoDB table name must later be given as command line parameters to our services!
 
 ## To Do...
 - [ ] Implement the Spark Analysis (Colombe)
 - [ ] Think about analysis that can be performed on the data (All)
-- [ ] Implement an Alarm solution: Email via SNS (Lea)
-- [ ] Change Storage from S3 to DynamoDB (Lea)
 - [ ] Think about archiving mechanism (Florian)
 
 - [ ] Slides for the final presentation (started: https://drive.google.com/open?id=1vLUkIZvWxExHNiCq2eZpneHbTwLoO8Mj)
 - [ ] Deployment of whole project to AWS: Terraform/ Ansible (Florian + Céline)
 - [ ] Create a manual on how to test the whole project for the prof (Florian + Céline)
 
+- [x] Change Storage from S3 to DynamoDB (Lea)
+- [x] Implement an Alarm solution: Email via SNS (Lea) DONE: if you want to receive emails, subscribe to the prestacop topic
 - [x] Refactor all service, extract methods/classes and such (Céline, Florian)
 - [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
 - [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
