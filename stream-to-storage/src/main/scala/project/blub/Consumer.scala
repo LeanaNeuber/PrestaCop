@@ -4,9 +4,10 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
-import com.amazonaws.services.kinesis.model.{GetRecordsRequest, GetShardIteratorResult, Record}
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
+import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item, Table}
+import com.amazonaws.services.kinesis.model.{GetRecordsRequest, Record}
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import play.api.libs.json._
 import project.Message
 
@@ -21,23 +22,23 @@ object Consumer {
   def main(args: Array[String]): Unit = {
 
     if (args.length < 3)
-      println("Three arguments are required to start this application: the aws region, the stream, and the bucket name!")
+      println("Three arguments are required to start this application: the aws region, the stream, and the DynamoDb table!")
 
     val region = args(0)
     val stream = args(1)
-    val bucket = args(2)
+    val table = args(2)
 
     val creds = getCreds
-    checkShard(stream, bucket, buildS3Client(region, creds),buildKinesisClient(region, creds), "shardId-000000000000")
+    checkShard(stream, getDynamoTable(region, table, creds),buildKinesisClient(region, creds), "shardId-000000000000")
 
   }
 
-  def checkShard(stream: String, bucket: String, s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardId: String): Unit = {
+  def checkShard(stream: String, table: Table, kinesisClient: AmazonKinesis, shardId: String): Unit = {
     val shardIterator = kinesisClient.getShardIterator(stream, shardId, "LATEST").getShardIterator
-    loopPoll(bucket, s3Client, kinesisClient, shardIterator)
+    loopPoll(table, kinesisClient, shardIterator)
   }
 
-  def loopPoll(bucket: String, s3Client: AmazonS3, kinesisClient: AmazonKinesis, shardIterator: String):Unit =  {
+  def loopPoll(table: Table, kinesisClient: AmazonKinesis, shardIterator: String):Unit =  {
 
     val getRecordsRequest = new GetRecordsRequest
     getRecordsRequest.setShardIterator(shardIterator)
@@ -45,23 +46,31 @@ object Consumer {
 
     val recordsResult = kinesisClient.getRecords(getRecordsRequest)
 
-    processRecords(bucket, s3Client, recordsResult.getRecords.asScala.toList)
+    processRecords(table, recordsResult.getRecords.asScala.toList)
 
     //Sleep for 1 seconds, then call the method again. Maybe not the best approach because never ending..
     Thread.sleep(1000)
 
     val next_iter = recordsResult.getNextShardIterator
-    loopPoll(bucket, s3Client,kinesisClient, next_iter)
+    loopPoll(table,kinesisClient, next_iter)
 
   }
 
-  def processRecords(bucket: String, s3Client: AmazonS3, records: List[Record]) = {
+  def processRecords(table: Table, records: List[Record]) = {
     records.map(r => StandardCharsets.UTF_8.decode(r.getData).toString()).map(message => Json.parse(message).as[Message])
-      .foreach(m => store(bucket, s3Client, m))
+      .foreach(m => storeToDynamo(table, m))
   }
 
-  def store(bucket: String, s3Client: AmazonS3, message: Message): Unit = {
-    s3Client.putObject(bucket, message.droneId +"_"+ message.time.replace("/", "-"), message.toString)
+  def storeToDynamo(table: Table, message: Message): Unit = {
+    table.putItem(new Item()
+      .withPrimaryKey("id", message.droneId+"_"+message.time)
+      .withString("location",message.location)
+      .withString("time",message.time)
+      .withString("droneId", message.droneId)
+      .withString("violationCode",message.violationCode.getOrElse(null))
+      .withString("violationImageId",message.violationImageId.getOrElse(null))
+      //Add a TTL of 5 days from now
+      .withLong("ttl", System.currentTimeMillis() / 1000L + 432000L  ))
   }
 
   private def getCreds = {
@@ -82,10 +91,14 @@ object Consumer {
     clientBuilder.build
   }
 
-  private def buildS3Client(region: String, credentialsProvider: AWSCredentialsProvider) = {
-    val clientBuilder = AmazonS3ClientBuilder.standard()
+  private def getDynamoTable(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
+    val clientBuilder = AmazonDynamoDBClientBuilder.standard()
     clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
-    clientBuilder.build
+    val client = clientBuilder.build
+
+    val dynamoDB = new DynamoDB(client)
+    dynamoDB.getTable(table)
   }
+
 }
