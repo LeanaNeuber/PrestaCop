@@ -4,6 +4,10 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
+import com.amazonaws.services.dynamodbv2.document.DynamoDB
+import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec
+import com.amazonaws.services.dynamodbv2.model.ScanRequest
 import com.amazonaws.services.kinesis.model.{GetRecordsRequest, GetShardIteratorResult, Record}
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
 import com.amazonaws.services.s3.model.{GetObjectRequest, ListObjectsRequest}
@@ -22,25 +26,15 @@ object Analyser {
   def main(args: Array[String]): Unit = {
 
     val region = "eu-central-1"
-    val bucket = "prestacop"
+    val table = "prestacop"
 
     val credits = getCreds
-    val S3Client = buildS3Client(region, credits)
 
-    val listObjectsRequest = new ListObjectsRequest().
-      withBucketName(bucket).
-      withDelimiter("/")
-
-    var objects = S3Client.listObjects(listObjectsRequest)
-
-    do {
-      objects.getObjectSummaries().forEach(object_summary => S3Client.getObject(
-        new GetObjectRequest(bucket , object_summary.getKey()),
-        new File(""+object_summary.getKey().split("/")(object_summary.getKey().split("/").length-1))
-      ))
-      objects = S3Client.listNextBatchOfObjects(objects);
-    } while (objects.isTruncated())
-
+    val DBCLient = buildDynamoDBClient(region, table, credits)
+    val scanRequest = new ScanRequest()
+      .withTableName(table);
+    val result = DBCLient.scan(scanRequest)
+    print(result)
   }
 
   private def getCreds = {
@@ -54,8 +48,18 @@ object Analyser {
     }
   }
 
-  private def buildS3Client(region: String, credentialsProvider: AWSCredentialsProvider) = {
-    val clientBuilder = AmazonS3ClientBuilder.standard()
+  private def getDynamoTable(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
+    val clientBuilder = AmazonDynamoDBClientBuilder.standard()
+    clientBuilder.setRegion(region)
+    clientBuilder.setCredentials(credentialsProvider)
+    val client = clientBuilder.build
+
+    val dynamoDB = new DynamoDB(client)
+    dynamoDB.getTable(table)
+  }
+
+  private def buildDynamoDBClient(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
+    val clientBuilder = AmazonDynamoDBClientBuilder.standard()
     clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
