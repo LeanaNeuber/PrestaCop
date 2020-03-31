@@ -12,6 +12,7 @@ import com.amazonaws.services.kinesis.model.{GetRecordsRequest, GetShardIterator
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
 import com.amazonaws.services.s3.model.{GetObjectRequest, ListObjectsRequest}
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
+import com.amazonaws.services.simpledb.model.Item
 import play.api.libs.json._
 import project.Message
 
@@ -27,15 +28,26 @@ object Analyser {
 
     val region = "eu-central-1"
     val table = "prestacop"
-
     val credits = getCreds
-
     val DBCLient = buildDynamoDBClient(region, table, credits)
+
     val scanRequest = new ScanRequest()
       .withTableName(table);
     val result = DBCLient.scan(scanRequest)
-    print(result)
+
+    /*result.getItems.forEach(data =>
+      data.values().forEach(d =>
+        print(d.getS)
+      )
+    )*/
+
+    val aaaah = result.getItems
+    print(aaaah.getClass)
+
+
+
   }
+
 
   private def getCreds = {
     new AWSCredentialsProvider {
@@ -64,4 +76,6 @@ object Analyser {
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
+
+
 }
