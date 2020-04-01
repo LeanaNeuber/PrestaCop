@@ -129,3 +129,27 @@ We need to implement the following steps with Terraform:
 - [x] Question: Should the CSV-to-Stream be deployed to AWS?
 
   -> Nope, one-time thing are OK
+
+- [x] Question : is displaying the alerts in an EC2 terminal enough ?
+
+  -> He will send email himself
+  
+  -> There is a log analytics service (CloudWatch) maybe working for EC2
+
+- [x] Question : is it good if you ssh into the EC2 instance and look at the results of the spark analysis ?
+
+  -> use EMR...
+  
+- [x] Question : is it good if you ssh into the EC2 instance and start the spark analysis himself ?
+    
+  -> use EMR, and from the AWS website the user will launch the analysis
+    
+- [x] Presentation : should we show that Terraform is working ?
+  
+  -> show that AWS setup is clean, run Terraform and 5min after show that the whole architechture has been created
+   
+- [x] Presentation : can we run the services locally and not on EC2
+  
+  -> not locally, on the cloud
+  
+- [x] Firehose OR a self-created service that does stream-to-storage is fine
