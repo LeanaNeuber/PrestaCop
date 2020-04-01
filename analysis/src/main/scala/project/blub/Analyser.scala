@@ -55,23 +55,23 @@ object Analyser {
 
     var orders = sc.hadoopRDD(jobConf, classOf[DynamoDBInputFormat], classOf[Text], classOf[DynamoDBItemWritable])
 
-    orders.map(t => t._2.getItem()).collect.foreach(println)
+    //orders.map(t => t._2.getItem()).collect.foreach(println)
     val simple2: RDD[(String)] = orders.map { case (text, dbwritable) => (dbwritable.toString)}
-
+    print(simple2.collect())
     /*val scanRequest = new ScanRequest()
       .withTableName(table);
     val result = DBCLient.scan(scanRequest)
 
-    /*result.getItems.forEach(data =>
+    result.getItems.forEach(data =>
       data.values().forEach(d =>
-        print(d.getS)
+        print
+        (d.getS)
       )
-    )*/
+    )
 
     val aaaah = result.getItems
     print(aaaah.getClass)
-  */
-
+    */
 
   }
 
