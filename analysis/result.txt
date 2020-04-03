@@ -1,0 +1,5 @@
+Count total :18297
+Count alerts: 12
+Drone of the month: 34730 with number of detections: 5
+Top month: 5 with number of infractions: 1777
+Top violation code: 671 with number of detections: 12

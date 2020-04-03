@@ -1,18 +1,12 @@
 package project.blub
 
-import java.io.File
-import java.nio.charset.StandardCharsets
+import java.io.{File, PrintWriter}
+import java.util
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
-import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec
-import com.amazonaws.services.dynamodbv2.model.ScanRequest
-import com.amazonaws.services.kinesis.model.{GetRecordsRequest, GetShardIteratorResult, Record}
-import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
-import com.amazonaws.services.s3.model.{GetObjectRequest, ListObjectsRequest}
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
-import com.amazonaws.services.simpledb.model.Item
+import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import org.apache.hadoop.dynamodb.DynamoDBItemWritable
 import org.apache.hadoop.mapred.JobConf
 import play.api.libs.json._
@@ -20,10 +14,10 @@ import project.Message
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SparkSession
 import org.apache.hadoop.dynamodb.read.DynamoDBInputFormat
-
 import org.apache.hadoop.io.Text
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 
 object Analyser {
@@ -53,26 +47,61 @@ object Analyser {
     jobConf.set("mapred.input.format.class", "org.apache.hadoop.dynamodb.read.DynamoDBInputFormat")
 
 
-    var orders = sc.hadoopRDD(jobConf, classOf[DynamoDBInputFormat], classOf[Text], classOf[DynamoDBItemWritable])
+    val messages = sc.hadoopRDD(jobConf, classOf[DynamoDBInputFormat], classOf[Text], classOf[DynamoDBItemWritable])
+      .map(t => t._2.getItem)
+      .map(item => toMessage(item))
 
-    //orders.map(t => t._2.getItem()).collect.foreach(println)
-    val simple2: RDD[(String)] = orders.map { case (text, dbwritable) => (dbwritable.toString)}
-    print(simple2.collect())
-    /*val scanRequest = new ScanRequest()
-      .withTableName(table);
-    val result = DBCLient.scan(scanRequest)
+    val countItems = messages.count()
 
-    result.getItems.forEach(data =>
-      data.values().forEach(d =>
-        print
-        (d.getS)
-      )
-    )
+    val countAlerts = messages
+      .filter(m => m.violationCode.isDefined)
+      .filter(m => m.violationCode.get.equals("666"))count()
 
-    val aaaah = result.getItems
-    print(aaaah.getClass)
-    */
+    val topDrone = messages
+      .map(m => m.droneId)
+      .map((_, 1))
+      .reduceByKey(_ + _).max()(Ordering[Int].on(x=>x._2))
 
+    val topMonth = messages
+      .map(m => m.time)
+      .map(m => getMonth(m))
+      .filter(s => s.isDefined)
+      .map(s => s.get)
+      .map((_, 1))
+      .reduceByKey(_ + _).sortBy(_._2).max()(Ordering[Int].on(x=>x._2))
+
+    val topViolationCode = messages
+      .map(m => m.violationCode)
+      .filter(m => m.isDefined)
+      .map(c => c.get)
+      .map((_, 1))
+      .reduceByKey(_ + _).sortBy(_._2).max()(Ordering[Int].on(x=>x._2))
+
+    val pw = new PrintWriter(new File("result.txt" ))
+    pw.write("Count total :" + countItems)
+    pw.write("\nCount alerts: " + countAlerts)
+    pw.write("\nDrone of the month: " + topDrone._1 + " with number of detections: " + topDrone._2.toString())
+    pw.write("\nTop month: " + topMonth._1 + " with number of infractions: " + topMonth._2.toString())
+    pw.write("\nTop violation code: " + topViolationCode._1 + " with number of detections: " + topViolationCode._2.toString())
+    pw.close
+  }
+
+  def getMonth(datestring: String) : Option[String] = {
+    try {
+      val dtf = DateTimeFormat.forPattern("MM/dd/yyyy")
+      Some(dtf.parseDateTime(datestring).getMonthOfYear.toString)
+    } catch {
+      case e: Exception => None
+    }
+  }
+
+
+  def toMessage(item: util.Map[String, AttributeValue]): Message = {
+    // We are ignoring the imageId, we don't use that anyways..
+    val x = if (item.containsKey("violationCode"))
+      new Message(item.get("location").getS, item.get("time").getS, item.get("droneId").getS, Option(item.get("violationCode").getS)) else
+      new Message(item.get("location").getS, item.get("time").getS, item.get("droneId").getS)
+    x
   }
 
 
@@ -103,6 +132,4 @@ object Analyser {
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
-
-
 }

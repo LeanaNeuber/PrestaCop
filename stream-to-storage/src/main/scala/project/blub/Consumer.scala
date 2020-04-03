@@ -62,15 +62,16 @@ object Consumer {
   }
 
   def storeToDynamo(table: Table, message: Message): Unit = {
-    table.putItem(new Item()
-      .withPrimaryKey("id", message.droneId+"_"+message.time)
+    val item = new Item().withPrimaryKey("id", message.droneId+"_"+message.time)
       .withString("location",message.location)
       .withString("time",message.time)
       .withString("droneId", message.droneId)
-      .withString("violationCode",message.violationCode.getOrElse(null))
-      .withString("violationImageId",message.violationImageId.getOrElse(null))
       //Add a TTL of 5 days from now
-      .withLong("ttl", System.currentTimeMillis() / 1000L + 432000L  ))
+      .withLong("ttl", System.currentTimeMillis() / 1000L + 432000L  )
+    if(message.violationCode.isDefined && message.violationImageId.isDefined)
+      item.withString("violationCode",message.violationCode.getOrElse(null))
+        .withString("violationImageId",message.violationImageId.getOrElse(null))
+    table.putItem(item)
   }
 
   private def getCreds = {
