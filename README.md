@@ -96,10 +96,6 @@ We need to implement the following steps with Terraform:
 > The region, kinesis stream name, sns topic arn, and dynamoDB table name must later be given as command line parameters to our services!
 
 ## To Do...
-- [ ] Implement the Spark Analysis (Colombe)
-- [ ] Think about analysis that can be performed on the data (All)
-- [ ] Think about archiving mechanism (Florian)
-
 - [ ] Slides for the final presentation (started: https://drive.google.com/open?id=1vLUkIZvWxExHNiCq2eZpneHbTwLoO8Mj)
 - [ ] Deployment of whole project to AWS: Terraform/ Ansible (Florian + Céline)
 - [ ] Create a manual on how to test the whole project for the prof (Florian + Céline)
@@ -109,7 +105,11 @@ We need to implement the following steps with Terraform:
 - [x] Refactor all service, extract methods/classes and such (Céline, Florian)
 - [x] Provide proper data cleansing on CSV (I think this is not necessary atm)
 - [x] Add command line parameters or environment variables to all our services except Analysis (not started yet) (Lea)
-- [x] Update all readmes with information on the command line parameters and functionality 
+- [x] Update all readmes with information on the command line parameters and functionality
+- [x] Implement the Spark Analysis (Colombe)
+- [x] Think about analysis that can be performed on the data (All)
+- [x] Think about archiving mechanism (Florian) --> not done anymore
+
 
 ## Questions to ask
 - [x] Can we do some services in another language than Scala? Example: the alert service (AWS Lambda can't be used in Scala)
