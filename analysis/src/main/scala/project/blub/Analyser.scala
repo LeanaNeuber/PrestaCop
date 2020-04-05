@@ -4,8 +4,6 @@ import java.io.{File, PrintWriter}
 import java.util
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
-import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import org.apache.hadoop.dynamodb.DynamoDBItemWritable
 import org.apache.hadoop.mapred.JobConf
@@ -13,7 +11,6 @@ import play.api.libs.json._
 import project.Message
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
-import org.apache.spark.rdd.RDD
 import org.apache.hadoop.dynamodb.read.DynamoDBInputFormat
 import org.apache.hadoop.io.Text
 import org.joda.time.DateTime
@@ -26,10 +23,14 @@ object Analyser {
 
   def main(args: Array[String]): Unit = {
 
-    val region = "eu-central-1"
-    val table = "prestacop"
+    if (args.length < 2)
+      println("Two arguments are required to start this application: the aws region and the dynamodb table name!")
+
+    val region = args(0)
+    val table = args(1)
+
+
     val credits = getCreds
-    val DBCLient = buildDynamoDBClient(region, table, credits)
 
     val conf = new SparkConf()
       .setAppName("Analyser")
@@ -114,22 +115,5 @@ object Analyser {
         new PropertiesCredentials(credentialsFile)
       }
     }
-  }
-
-  private def getDynamoTable(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
-    val clientBuilder = AmazonDynamoDBClientBuilder.standard()
-    clientBuilder.setRegion(region)
-    clientBuilder.setCredentials(credentialsProvider)
-    val client = clientBuilder.build
-
-    val dynamoDB = new DynamoDB(client)
-    dynamoDB.getTable(table)
-  }
-
-  private def buildDynamoDBClient(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
-    val clientBuilder = AmazonDynamoDBClientBuilder.standard()
-    clientBuilder.setRegion(region)
-    clientBuilder.setCredentials(credentialsProvider)
-    clientBuilder.build
   }
 }
