@@ -77,7 +77,7 @@ object Consumer {
     clientBuilder.build
   }
 
-  private def buildSnsClient(region: String) = {
+  private def buildSnsClient(region: String): AmazonSNS = {
     val clientBuilder = AmazonSNSClientBuilder.standard()
     clientBuilder.setRegion(region)
     clientBuilder.build
