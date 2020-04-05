@@ -89,6 +89,10 @@ log.txt
 # Mac specifics
 **/.DS_Store
 
-# Terraform sensible files
-/**/*.tfstate*
-/**/*.terraform/**/*
+### Terraform ###
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
