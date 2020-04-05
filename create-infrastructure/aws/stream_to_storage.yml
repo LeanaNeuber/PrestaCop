@@ -1,5 +1,5 @@
 #cloud-config
-update_packages = true
+update_packages: true
 packages:
   - java
 runcmd:

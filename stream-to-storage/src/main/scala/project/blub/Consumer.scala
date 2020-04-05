@@ -3,7 +3,6 @@ package project.blub
 import java.io.File
 import java.nio.charset.StandardCharsets
 
-import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item, Table}
 import com.amazonaws.services.kinesis.model.{GetRecordsRequest, Record}
@@ -28,8 +27,7 @@ object Consumer {
     val stream = args(1)
     val table = args(2)
 
-    val creds = getCreds
-    checkShard(stream, getDynamoTable(region, table, creds),buildKinesisClient(region, creds), "shardId-000000000000")
+    checkShard(stream, getDynamoTable(region, table),buildKinesisClient(region), "shardId-000000000000")
 
   }
 
@@ -74,28 +72,15 @@ object Consumer {
     table.putItem(item)
   }
 
-  private def getCreds = {
-    new AWSCredentialsProvider {
-      override def refresh(): Unit = {}
-
-      override def getCredentials: AWSCredentials = {
-        val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
-        new PropertiesCredentials(credentialsFile)
-      }
-    }
-  }
-
-  private def buildKinesisClient(region: String, credentialsProvider: AWSCredentialsProvider) = {
+  private def buildKinesisClient(region: String) = {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
     clientBuilder.setRegion(region)
-    clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
 
-  private def getDynamoTable(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
+  private def getDynamoTable(region: String, table: String) = {
     val clientBuilder = AmazonDynamoDBClientBuilder.standard()
     clientBuilder.setRegion(region)
-    clientBuilder.setCredentials(credentialsProvider)
     val client = clientBuilder.build
 
     val dynamoDB = new DynamoDB(client)
