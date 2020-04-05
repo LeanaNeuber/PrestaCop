@@ -72,6 +72,7 @@ object Consumer {
       item.withString("violationCode",message.violationCode.getOrElse(null))
         .withString("violationImageId",message.violationImageId.getOrElse(null))
     table.putItem(item)
+    println("Successfully stored message: " + message.toString)
   }
 
   private def getCreds = {
@@ -90,6 +91,7 @@ object Consumer {
     clientBuilder.setRegion(region)
     clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
+    println("Successfully built the Kinesis client!")
   }
 
   private def getDynamoTable(region: String, table: String, credentialsProvider: AWSCredentialsProvider) = {
@@ -100,6 +102,8 @@ object Consumer {
 
     val dynamoDB = new DynamoDB(client)
     dynamoDB.getTable(table)
+
+    println("Successfully built the DynamoDB client and retrieved the table!")
   }
 
 }
