@@ -36,6 +36,7 @@ object Consumer {
     loopPoll(table, kinesisClient, shardIterator)
   }
 
+  @scala.annotation.tailrec
   def loopPoll(table: Table, kinesisClient: AmazonKinesis, shardIterator: String):Unit =  {
 
     val getRecordsRequest = new GetRecordsRequest
@@ -51,7 +52,6 @@ object Consumer {
 
     val next_iter = recordsResult.getNextShardIterator
     loopPoll(table,kinesisClient, next_iter)
-
   }
 
   def processRecords(table: Table, records: List[Record]) = {
@@ -73,22 +73,23 @@ object Consumer {
     println("Successfully stored message: " + message.toString)
   }
 
-  private def buildKinesisClient(region: String) = {
+  private def buildKinesisClient(region: String): AmazonKinesis = {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
     clientBuilder.setRegion(region)
-    clientBuilder.build
+    val client = clientBuilder.build
     println("Successfully built the Kinesis client!")
+    client
   }
 
-  private def getDynamoTable(region: String, table: String) = {
+  private def getDynamoTable(region: String, table_name: String) = {
     val clientBuilder = AmazonDynamoDBClientBuilder.standard()
     clientBuilder.setRegion(region)
     val client = clientBuilder.build
 
     val dynamoDB = new DynamoDB(client)
-    dynamoDB.getTable(table)
-
+    val table = dynamoDB.getTable(table_name)
     println("Successfully built the DynamoDB client and retrieved the table!")
+    table
   }
 
 }
