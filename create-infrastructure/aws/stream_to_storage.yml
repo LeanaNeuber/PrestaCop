@@ -1,0 +1,6 @@
+#cloud-config
+update_packages: true
+packages:
+  - java
+runcmd:
+  - echo "cc" > log.txt
