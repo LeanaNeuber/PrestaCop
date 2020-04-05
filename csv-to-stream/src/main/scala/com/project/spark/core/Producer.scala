@@ -22,7 +22,8 @@ object Producer {
     val stream = args(1)
     val pathToFile = args(2)
 
-    if (args.length == 4 && args(3) == "easter") {
+    // Joyeuse Pâques !
+    if (args.length == 4 && args(3) == "paques") {
       val base64 = "VGhlIDQgVnMgb2YgQmlnIERhdGE6Ci0gVmVsb2NpdHkgOiBvdXIgcHJvZ3JhbXMgYXJlIHNsb3cgYXMgZnVjawotIFZhcml" +
         "ldHkgOiB5b3UgbmVlZCB0byB1c2UgMTMgdG9vbHMgYW5kIDk4IEFXUyBzZXJ2aWNlcyB0byBnZXQgYSByZXN1bHQKLSBWb2x1bWUgOiB5b" +
         "3VyIC5qYXIgd2lsbCB3ZWlnaHQgbW9yZSB0aGFuIHNvbWUgdmlkZW8gZ2FtZXMKLSBWZXJhY2l0eSA6IGV2ZXJ5b25lIGxpZXMsIGVzcGV" +
