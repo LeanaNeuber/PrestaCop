@@ -3,7 +3,6 @@ package project.folder
 import java.io.File
 import java.nio.charset.StandardCharsets
 
-import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
 import com.amazonaws.services.dynamodbv2.document.Item
@@ -31,9 +30,7 @@ object Consumer {
     val stream = args(1)
     val topicArn = args(2)
 
-
-    val creds = getCreds
-    checkShard(buildSnsClient(region, creds), topicArn, stream, buildKinesisClient(region, creds), "shardId-000000000000")
+    checkShard(buildSnsClient(region), topicArn, stream, buildKinesisClient(region), "shardId-000000000000")
   }
 
   def checkShard(snsClient: AmazonSNS, topicArn: String, stream: String, kinesisClient: AmazonKinesis, shardId: String): Unit = {
@@ -74,28 +71,15 @@ object Consumer {
     println("----------------------------------------------------------------")
   }
 
-  private def getCreds = {
-    new AWSCredentialsProvider {
-      override def refresh(): Unit = {}
-
-      override def getCredentials: AWSCredentials = {
-        val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
-        new PropertiesCredentials(credentialsFile)
-      }
-    }
-  }
-
-  private def buildKinesisClient(region: String, credentialsProvider: AWSCredentialsProvider) = {
+  private def buildKinesisClient(region: String) = {
     val clientBuilder = AmazonKinesisClientBuilder.standard()
     clientBuilder.setRegion(region)
-    clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
 
-  private def buildSnsClient(region: String, credentialsProvider: AWSCredentialsProvider) = {
+  private def buildSnsClient(region: String) = {
     val clientBuilder = AmazonSNSClientBuilder.standard()
     clientBuilder.setRegion(region)
-    clientBuilder.setCredentials(credentialsProvider)
     clientBuilder.build
   }
 }
