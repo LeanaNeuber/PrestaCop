@@ -2,6 +2,7 @@ package com.project.spark.core
 
 import java.io.File
 import java.nio.ByteBuffer
+import java.util.Base64
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, PropertiesCredentials}
 import com.amazonaws.services.kinesis.model.PutRecordRequest
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
@@ -20,6 +21,17 @@ object Producer {
     val region = args(0)
     val stream = args(1)
     val pathToFile = args(2)
+
+    if (args.length == 4 && args(3) == "easter") {
+      val base64 = "VGhlIDQgVnMgb2YgQmlnIERhdGE6Ci0gVmVsb2NpdHkgOiBvdXIgcHJvZ3JhbXMgYXJlIHNsb3cgYXMgZnVjawotIFZhcml" +
+        "ldHkgOiB5b3UgbmVlZCB0byB1c2UgMTMgdG9vbHMgYW5kIDk4IEFXUyBzZXJ2aWNlcyB0byBnZXQgYSByZXN1bHQKLSBWb2x1bWUgOiB5b" +
+        "3VyIC5qYXIgd2lsbCB3ZWlnaHQgbW9yZSB0aGFuIHNvbWUgdmlkZW8gZ2FtZXMKLSBWZXJhY2l0eSA6IGV2ZXJ5b25lIGxpZXMsIGVzcGV" +
+        "jaWFsbHkgdGVhY2hlcnMgYW5kIGVycm9yIG1lc3NhZ2Vz"
+
+      val decoded = Base64.getDecoder.decode(base64)
+      val decoded_string = (decoded.map(_.toChar)).mkString
+      println("\n" + decoded_string + "\n")
+    }
 
     val kinesisClient = buildKinesisClient(region, getCreds)
 
@@ -41,13 +53,13 @@ object Producer {
 
   //map to schema (case 48 columns do smth, case 51 do something, case else drop the line ) --> case class wtf?
   private def extractLines(stream: String, kinesisClient: AmazonKinesis, header: List[String], lineList: List[String]) = lineList match {
-      case x if lineList.size > header.indexOf("Street Name") => {
-        val location = x(header.indexOf("House Number")) + " " + x(header.indexOf("Street Name"))
-        val time = x(header.indexOf("Issue Date"))
-        val violationCode = x(header.indexOf("Violation Code"))
-        writeToKinesis(stream, kinesisClient, "test", Message(location, time, scala.util.Random.nextInt(100000).toString, Some(violationCode)))
-      }
-      case _ =>
+    case x if lineList.size > header.indexOf("Street Name") => {
+      val location = x(header.indexOf("House Number")) + " " + x(header.indexOf("Street Name"))
+      val time = x(header.indexOf("Issue Date"))
+      val violationCode = x(header.indexOf("Violation Code"))
+      writeToKinesis(stream, kinesisClient, "test", Message(location, time, scala.util.Random.nextInt(100000).toString, Some(violationCode)))
+    }
+    case _ =>
   }
 
   def writeToKinesis(stream: String, kinesisClient: AmazonKinesis, topic: String, message: Message): Unit = {
@@ -69,6 +81,7 @@ object Producer {
   private def getCreds = {
     new AWSCredentialsProvider {
       override def refresh(): Unit = {}
+
       override def getCredentials: AWSCredentials = {
         val credentialsFile = new File(System.getProperty("user.home"), ".aws.properties")
         new PropertiesCredentials(credentialsFile)

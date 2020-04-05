@@ -25,8 +25,28 @@ If you already have a SSH key pair named differently, you can provide the name a
 #### Get Terraform
 Download the terraform client [here](https://www.terraform.io/downloads.html), and install it following your OS instructions.
 
+#### Build the services
+3 services run on the cloud: the spark analysis, the alert system, and the stream-to-storage service.
+You need to package them into JAR files, in order for them to be sent in the cloud. ☁
+
+Run the following commands in order:
+
+* `cd analysis`
+
+* `sbt -mem 2048 assembly` *will take quit some time*
+ 
+* `cd ../stream-to-storage`
+
+* `sbt assembly` *will take quit some time*
+
+* `cd ../alert-system`
+
+* `sbt assembly` *will take quit some time*
+
+Congratulations ! Everything is ready for you to create the infrastructure.
 
 ### Creating the infrastructure
+
 First, to in the "aws" directory: `cd aws`
 
 Then, download the needed providers: `terraform init`
@@ -36,6 +56,14 @@ Finally, apply the infrastructure: `terraform apply -auto-approve`
 If you need to provide a custom key name, add the following argument: `-var key_name=your_key_name`
 
 If you want to use a specific AWS profile, add the following argument: `-var aws_profile=your_aws_profile`
+
+### Email subscription
+
+Now that the infrastructure is created, you might want to receive alerts *via* email (or SMS).
+
+You should go to your AWS console, go in the SNS section, click on "topics", click on "prestacop'.
+There, you can add a subscription by clicking "Create a subscription", choosing the "Email" protocol and entering your email.
+You will receive a confirmation email that you need to read first. Once confirmed, everything will be setup!
 
 ### Destroy the infrastructure
 
