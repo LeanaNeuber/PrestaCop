@@ -1,0 +1,8 @@
+#cloud-config
+update_packages: true
+packages:
+  - java
+runcmd:
+  - echo "Successfully created the instance" >> log.txt
+  # Launches a screen running the service
+  - screen -dmS service bash -c "java -jar /home/ec2-user/stream_to_storage.jar eu-central-1 prestacop prestacop >> log.txt"
