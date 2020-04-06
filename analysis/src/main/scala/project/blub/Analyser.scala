@@ -73,10 +73,10 @@ object Analyser {
       .reduceByKey(_ + _).sortBy(_._2).max()(Ordering[Int].on(x => x._2))
 
     println("Count total :" + countItems)
-    println("\nCount alerts: " + countAlerts)
-    println("\nDrone of the month: " + topDrone._1 + " with number of detections: " + topDrone._2.toString())
-    println("\nTop month: " + topMonth._1 + " with number of infractions: " + topMonth._2.toString())
-    println("\nTop violation code: " + topViolationCode._1 + " with number of detections: " + topViolationCode._2.toString())
+    println("Count alerts: " + countAlerts)
+    println("Drone of the month: " + topDrone._1 + " with number of detections: " + topDrone._2.toString())
+    println("Top month: " + topMonth._1 + " with number of infractions: " + topMonth._2.toString())
+    println("Top violation code: " + topViolationCode._1 + " with number of detections: " + topViolationCode._2.toString())
   }
 
   def getMonth(datestring: String): Option[String] = {
