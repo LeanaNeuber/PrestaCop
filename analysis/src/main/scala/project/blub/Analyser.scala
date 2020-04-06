@@ -12,10 +12,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.apache.hadoop.dynamodb.read.DynamoDBInputFormat
 import org.apache.hadoop.io.Text
-<<<<<<< Updated upstream
-=======
 import org.joda.time.format.DateTimeFormat
->>>>>>> Stashed changes
 
 object Analyser {
 
