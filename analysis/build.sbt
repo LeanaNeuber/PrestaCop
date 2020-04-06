@@ -18,7 +18,8 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "2.3.0"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.3.0"
 libraryDependencies += "org.apache.hadoop" % "hadoop-aws" % "3.2.1"
 libraryDependencies += "com.amazon.emr" % "emr-dynamodb-hadoop" % "4.12.0"
-
+libraryDependencies += "io.netty" % "netty-all" % "4.1.17.Final"
+libraryDependencies += "io.netty" % "netty" % "3.9.9.Final"
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
