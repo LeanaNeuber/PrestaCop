@@ -72,13 +72,11 @@ object Analyser {
       .map((_, 1))
       .reduceByKey(_ + _).sortBy(_._2).max()(Ordering[Int].on(x => x._2))
 
-    val pw = new PrintWriter(new File("result.txt"))
-    pw.write("Count total :" + countItems)
-    pw.write("\nCount alerts: " + countAlerts)
-    pw.write("\nDrone of the month: " + topDrone._1 + " with number of detections: " + topDrone._2.toString())
-    pw.write("\nTop month: " + topMonth._1 + " with number of infractions: " + topMonth._2.toString())
-    pw.write("\nTop violation code: " + topViolationCode._1 + " with number of detections: " + topViolationCode._2.toString())
-    pw.close
+    println("Count total :" + countItems)
+    println("\nCount alerts: " + countAlerts)
+    println("\nDrone of the month: " + topDrone._1 + " with number of detections: " + topDrone._2.toString())
+    println("\nTop month: " + topMonth._1 + " with number of infractions: " + topMonth._2.toString())
+    println("\nTop violation code: " + topViolationCode._1 + " with number of detections: " + topViolationCode._2.toString())
   }
 
   def getMonth(datestring: String): Option[String] = {
