@@ -142,3 +142,55 @@ resource "aws_iam_role_policy" "alert_sns_read" {
   }
   EOF
 }
+
+//////////
+
+// Alert system instance profile
+resource "aws_iam_instance_profile" "analysis_profile" {
+  name = "analysis_profile"
+  role = aws_iam_role.analysis_role.name
+
+  depends_on = [aws_iam_role_policy.dynamodb_full, aws_iam_role_policy.kinesis_read]
+}
+
+resource "aws_iam_role" "analysis_role" {
+  name = "analysis_role"
+  path = "/"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+               "Service": "ec2.amazonaws.com"
+            },
+            "Effect": "Allow",
+            "Sid": ""
+        }
+    ]
+}
+EOF
+}
+
+
+resource "aws_iam_role_policy" "analysis_dynamodb_full" {
+  name = "analysis_dynamodb_full"
+  role = aws_iam_role.analysis_role.id
+
+  policy = <<-EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "dynamodb:*"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+  }
+  EOF
+}

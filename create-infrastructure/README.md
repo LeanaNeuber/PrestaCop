@@ -26,14 +26,10 @@ If you already have a SSH key pair named differently, you can provide the name a
 Download the terraform client [here](https://www.terraform.io/downloads.html), and install it following your OS instructions.
 
 #### Build the services
-3 services run on the cloud: the spark analysis, the alert system, and the stream-to-storage service.
+2 services running on the cloud needs packaging on the cloud: the alert system, and the stream-to-storage service.
 You need to package them into JAR files, in order for them to be sent in the cloud. ☁
 
 Run the following commands in order:
-
-* `cd analysis`
-
-* `sbt -mem 2048 assembly` *will take quit some time*
  
 * `cd ../stream-to-storage`
 

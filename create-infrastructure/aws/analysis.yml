@@ -1,0 +1,11 @@
+#cloud-config
+update_packages: true
+packages:
+  - java
+runcmd:
+  - echo "Successfully created the instance" >> log.txt
+  # Launches a screen running the service
+  - curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+  - sudo yum install sbt -y
+  - cd /home/ec2-user
+  - screen -dmS service bash -c "sbt \"run eu-central-1 prestacop\"" >> log.txt"
