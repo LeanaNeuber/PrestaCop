@@ -29,30 +29,20 @@ object Analyser {
     val region = args(0)
     val table = args(1)
 
-<<<<<<< Updated upstream
-
-    val credits = getCreds
-
-=======
->>>>>>> Stashed changes
     val conf = new SparkConf()
       .setAppName("Analyser")
       .setMaster("local[*]") // here local mode. And * means you will use as much as you have cores.
 
-
-<<<<<<< Updated upstream
-    val jobConf = new JobConf(sc.hadoopConfiguration)
-=======
     val sc = SparkContext.getOrCreate(conf)
 
-    val jobConf = new JobConf()
-
->>>>>>> Stashed changes
+    val jobConf = new JobConf(sc.hadoopConfiguration)
     jobConf.set("dynamodb.servicename", "dynamodb")
     jobConf.set("dynamodb.input.tableName", table)
     jobConf.set("dynamodb.regionid", region)
     jobConf.set("mapred.output.format.class", "org.apache.hadoop.dynamodb.write.DynamoDBOutputFormat")
     jobConf.set("mapred.input.format.class", "org.apache.hadoop.dynamodb.read.DynamoDBInputFormat")
+
+
 
 
     val messages = sc.hadoopRDD(jobConf, classOf[DynamoDBInputFormat], classOf[Text], classOf[DynamoDBItemWritable])
