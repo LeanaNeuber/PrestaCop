@@ -13,7 +13,6 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.apache.hadoop.dynamodb.read.DynamoDBInputFormat
 import org.apache.hadoop.io.Text
-import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
 
@@ -32,23 +31,13 @@ object Analyser {
 
     val credits = getCreds
 
-
-
-
-
     val conf = new SparkConf()
       .setAppName("Analyser")
       .setMaster("local[*]") // here local mode. And * means you will use as much as you have cores.
 
     val sc = SparkContext.getOrCreate(conf)
 
-    val hadoopConfig = sc.hadoopConfiguration
-
-    hadoopConfig.set("fs.hdfs.impl", classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName)
-
-    hadoopConfig.set("fs.file.impl", classOf[org.apache.hadoop.fs.LocalFileSystem].getName)
-
-    val jobConf = new JobConf(hadoopConfig)
+    val jobConf = new JobConf(sc.hadoopConfiguration)
     jobConf.set("dynamodb.servicename", "dynamodb")
     jobConf.set("dynamodb.input.tableName", table)
     jobConf.set("dynamodb.regionid", region)
